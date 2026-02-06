@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crfpython"
+version = "0.1.0"
+description = "Python implementation of CRFsuite - Conditional Random Fields for labeling sequential data"
+readme = "README.md"
+authors = [
+    {name = "Wannaphong Phatthiyaphaibun", email = "wannaphong@yahoo.com"}
+]
+license = {text = "Apache-2.0"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Linguistic",
+]
+requires-python = ">=3.7"
+dependencies = [
+    "numpy>=1.19.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov",
+]
+
+[project.urls]
+Homepage = "https://github.com/wannaphong/crfpython"
+Repository = "https://github.com/wannaphong/crfpython"
+"Bug Tracker" = "https://github.com/wannaphong/crfpython/issues"
+
+[tool.setuptools]
+packages = ["crfpython"]
