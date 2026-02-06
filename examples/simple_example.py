@@ -66,6 +66,9 @@ def create_sample_data():
 
 
 def main():
+    import tempfile
+    import os
+    
     print("CRFPython Example")
     print("=" * 50)
     
@@ -83,7 +86,7 @@ def main():
         trainer.append(xseq, yseq)
     
     # Train model
-    model_file = '/tmp/example_model.crfsuite'
+    model_file = os.path.join(tempfile.gettempdir(), 'example_model.crfsuite')
     stats = trainer.train(model_file)
     print(f"   Training complete!")
     print(f"   Model saved to: {model_file}")
