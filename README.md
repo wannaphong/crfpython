@@ -66,6 +66,55 @@ labels = tagger.tag(xseq)
 print(labels)  # ['GREETING', 'OBJECT']
 ```
 
+### python-crfsuite Compatible API
+
+CRFPython also supports the [python-crfsuite](https://github.com/scrapinghub/python-crfsuite) API for easy migration:
+
+```python
+import crfpython
+
+# Dict-based feature format (python-crfsuite style)
+train_data = [
+    ([{"word": "Paris", "pos": "NNP", "is_cap": True},
+      {"word": "is", "pos": "VBZ", "is_cap": False}],
+     ["B-LOC", "O"]),
+]
+
+# Initialize trainer
+trainer = crfpython.Trainer(algorithm='lbfgs')
+trainer.set_params({'c1': 0.1, 'c2': 0.1, 'max_iterations': 100})
+
+# Add training data (accepts dicts directly)
+for xseq, yseq in train_data:
+    trainer.append(xseq, yseq)
+
+# Train model
+trainer.train('model.crfsuite')
+
+# Tag with context manager (python-crfsuite style)
+tagger = crfpython.Tagger()
+with tagger.open('model.crfsuite'):
+    # Set sequence and tag
+    test_seq = [{"word": "London", "pos": "NNP", "is_cap": True}]
+    tagger.set(test_seq)
+    labels = tagger.tag()  # No argument needed after set()
+    
+    # Get probabilities
+    prob = tagger.probability(labels)
+    marginal = tagger.marginal("B-LOC", 0)
+    
+    # Inspect model
+    info = tagger.info()
+    print(f"Model has {info['num_labels']} labels")
+```
+
+**Supported python-crfsuite features:**
+- Dict-based feature input with nested dicts: `{"prefix": ["p1", "p2"]}`
+- Boolean/string values: `{"is_cap": True}`, `{"pos": "NOUN"}`
+- `Trainer.select()`, `params()`, `set()`, `get()`, `help()`
+- `Tagger.set()`, `probability()`, `marginal()`, `dump()`, `info()`
+- Context manager support: `with tagger.open()`
+
 ## API Reference
 
 ### Core Classes
@@ -81,18 +130,34 @@ Represents a single item (token) in a sequence with its features.
 
 - `append(attr)`: Add an attribute to this item
 
-#### `ItemSequence()`
+#### `ItemSequence(pyseq=None)`
 Represents a sequence of items.
 
-- `append(item)`: Add an item to this sequence
+Can be initialized with:
+- Empty: `ItemSequence()`
+- Item objects: `ItemSequence([item1, item2])`
+- Dicts (python-crfsuite style): `ItemSequence([{"word": "hello", "pos": "NOUN"}])`
+- Lists: `ItemSequence([["feature1", "feature2"]])`
 
-#### `Trainer(algorithm='lbfgs', verbose=False)`
+Methods:
+- `append(item)`: Add an item (accepts Item, dict, or list)
+- `items_as_dicts()`: Return items as list of dicts
+
+#### `Trainer(algorithm=None, params=None, verbose=True)`
 Used for training CRF models.
 
-- `append(xseq, yseq, group=0)`: Add a training instance
-- `train(model_filename)`: Train and save the model
-- `set_params(params)`: Set training parameters
-- `get_params()`: Get current parameters
+**Training methods:**
+- `append(xseq, yseq, group=0)`: Add a training instance (accepts ItemSequence, dicts, or lists)
+- `train(model, holdout=-1)`: Train and save the model
+- `select(algorithm, type='crf1d')`: Initialize training algorithm
+
+**Parameter methods (python-crfsuite compatible):**
+- `params()`: Get list of available parameter names
+- `set_params(params)`: Set multiple parameters
+- `get_params()`: Get all current parameters
+- `set(name, value)`: Set individual parameter
+- `get(name)`: Get individual parameter
+- `help(name)`: Get parameter help text
 
 Supported algorithms:
 - `'lbfgs'`: Limited-memory BFGS
@@ -104,24 +169,35 @@ Supported algorithms:
 #### `Tagger()`
 Used for tagging sequences with a trained model.
 
-- `open(filename)`: Load a trained model
-- `tag(xseq)`: Tag a sequence and return predicted labels
+**Tagging methods:**
+- `open(name)`: Load a trained model (returns context manager)
+- `close()`: Close the model
+- `set(xseq)`: Set current sequence (accepts ItemSequence, dicts, or lists)
+- `tag(xseq=None)`: Tag a sequence (uses current if xseq is None)
+
+**Probability methods (python-crfsuite compatible):**
 - `labels()`: Get all possible labels
-- `marginal(label, pos)`: Get marginal probability
-- `probability(yseq)`: Get probability of a label sequence
+- `probability(yseq)`: Compute P(yseq|xseq) for current sequence
+- `marginal(label, pos)`: Compute marginal P(label at position)
+
+**Inspection methods:**
+- `info()`: Get model information (dict)
+- `dump(filename=None)`: Dump model in text format
 
 ## Examples
 
 See the `examples/` directory for more detailed examples:
 
 - `simple_example.py`: Basic usage demonstration
+- `pycrfsuite_api_example.py`: python-crfsuite compatible API example
 - `crfutils.py`: Utility functions for feature extraction and data processing
 
-To run the simple example:
+To run examples:
 
 ```bash
 cd examples
 python simple_example.py
+python pycrfsuite_api_example.py
 ```
 
 ## Training Algorithms
