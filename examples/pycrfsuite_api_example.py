@@ -54,7 +54,7 @@ def main():
         'max_iterations': 50,
     })
     
-    print(f"   Algorithm: {trainer._algorithm}")
+    print(f"   Algorithm: {trainer.algorithm}")
     print(f"   Parameters: c1={trainer.get('c1')}, c2={trainer.get('c2')}")
     
     # 3. Add training data (accepts dicts directly)

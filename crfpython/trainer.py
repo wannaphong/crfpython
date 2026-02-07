@@ -306,7 +306,7 @@ class Trainer:
             'calibration.candidates': 'Number of candidate learning rates',
             'calibration.max_trials': 'Maximum number of trials for calibration',
             'c': 'Aggressiveness parameter',
-            'error_sensitive': 'Include  error rate in the loss function',
+            'error_sensitive': 'Include error rate in the loss function',
             'averaging': 'Compute averaged weights',
             'variance': 'Initial variance of each weight',
             'gamma': 'Learning rate',
@@ -449,6 +449,11 @@ class Trainer:
     def clear(self):
         """Clear training data."""
         self.data.clear()
+    
+    @property
+    def algorithm(self):
+        """Get the current training algorithm name."""
+        return self._algorithm
     
     # Callback methods for subclassing
     def on_start(self, log):

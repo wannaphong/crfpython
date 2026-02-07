@@ -133,12 +133,12 @@ class TestTrainer:
     def test_create_trainer(self):
         """Test creating a trainer."""
         trainer = crfpython.Trainer()
-        assert trainer._algorithm == 'lbfgs'
+        assert trainer.algorithm == 'lbfgs'
     
     def test_create_trainer_with_algorithm(self):
         """Test creating a trainer with a specific algorithm."""
         trainer = crfpython.Trainer(algorithm='l2sgd')
-        assert trainer._algorithm == 'l2sgd'
+        assert trainer.algorithm == 'l2sgd'
     
     def test_append_training_data(self):
         """Test appending training data."""
@@ -191,7 +191,7 @@ class TestTrainer:
         try:
             trainer.train(model_file)  # train() returns None now
             assert os.path.exists(model_file)
-            assert trainer._algorithm in ['lbfgs', 'l2sgd', 'ap', 'pa', 'arow']
+            assert trainer.algorithm in ['lbfgs', 'l2sgd', 'ap', 'pa', 'arow']
         finally:
             if os.path.exists(model_file):
                 os.unlink(model_file)

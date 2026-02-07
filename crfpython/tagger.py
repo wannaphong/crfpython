@@ -148,6 +148,13 @@ class Tagger:
         Computes P(yseq|xseq) for the current input sequence
         (set via set() or tag() call).
         
+        **Note:** This is a simplified implementation that computes
+        unnormalized scores. The returned value may not be a proper
+        probability (i.e., may not sum to 1 across all sequences).
+        For ranking sequences or comparing alternatives, the relative
+        values are meaningful, but absolute values should be interpreted
+        with caution.
+        
         Parameters
         ----------
         yseq : list of str
@@ -156,7 +163,7 @@ class Tagger:
         Returns
         -------
         float
-            The probability P(yseq|xseq)
+            The unnormalized probability/score for the sequence
         """
         if self._model is None:
             raise RuntimeError("No model loaded")
