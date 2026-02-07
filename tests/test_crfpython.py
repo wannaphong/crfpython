@@ -338,11 +338,11 @@ class TestTagger:
         tagger = crfpython.Tagger()
         
         # Test with non-bytes data
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="Model data must be bytes"):
             tagger.open_inmemory("not bytes")
         
         # Test with invalid bytes data
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Failed to load model from memory:"):
             tagger.open_inmemory(b"invalid pickle data")
 
 
