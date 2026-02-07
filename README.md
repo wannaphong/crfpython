@@ -115,6 +115,7 @@ with tagger.open('model.crfsuite'):
 - Boolean/string values: `{"is_cap": True}`, `{"pos": "NOUN"}`
 - `Trainer.select()`, `params()`, `set()`, `get()`, `help()`
 - `Tagger.set()`, `probability()`, `marginal()`, `dump()`, `info()`
+- `Tagger.open_inmemory()`: Load model from bytes in memory
 - Context manager support: `with tagger.open()`
 
 ## API Reference
@@ -173,6 +174,7 @@ Used for tagging sequences with a trained model.
 
 **Tagging methods:**
 - `open(name)`: Load a trained model (returns context manager)
+- `open_inmemory(bytes)`: Load a trained model from memory (returns context manager)
 - `close()`: Close the model
 - `set(xseq)`: Set current sequence (accepts ItemSequence, dicts, or lists)
 - `tag(xseq=None)`: Tag a sequence (uses current if xseq is None)
