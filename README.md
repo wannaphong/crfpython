@@ -1,5 +1,7 @@
 # CRFPython
 
+[![Tests](https://github.com/wannaphong/crfpython/actions/workflows/tests.yml/badge.svg)](https://github.com/wannaphong/crfpython/actions/workflows/tests.yml)
+
 A Python implementation of CRFsuite - Conditional Random Fields for labeling sequential data.
 
 ## Overview
@@ -247,6 +249,53 @@ CRFPython is suitable for various sequence labeling tasks:
 ## Acknowledgments
 
 This project is a Python port of [CRFsuite](https://github.com/chokkan/crfsuite) by Naoaki Okazaki. The original CRFsuite is a fast, efficient C implementation of CRFs. This Python port aims to provide similar functionality with the benefits of pure Python code.
+
+## Testing
+
+CRFPython includes comprehensive test coverage with both pytest and unittest frameworks.
+
+### Running Tests
+
+Run all tests with pytest:
+
+```bash
+pytest tests/ -v
+```
+
+Run with coverage report:
+
+```bash
+pytest tests/ --cov=crfpython --cov-report=term --cov-report=html
+```
+
+Run with unittest:
+
+```bash
+python -m unittest discover tests/
+```
+
+Run specific test file:
+
+```bash
+pytest tests/test_crfpython.py -v
+python -m unittest tests.test_unittest
+```
+
+### Test Structure
+
+- `tests/test_crfpython.py` - Original pytest-style tests (19 tests)
+- `tests/test_unittest.py` - Unittest-style tests (30 tests)
+- Total: 49 tests with ~84% code coverage
+
+### Continuous Integration
+
+Tests are automatically run on GitHub Actions for:
+- Python versions: 3.8, 3.9, 3.10, 3.11, 3.12
+- Operating systems: Ubuntu, Windows, macOS
+- Linting with flake8 and black
+- Example scripts validation
+
+See `.github/workflows/tests.yml` for the full CI configuration.
 
 ## License
 
