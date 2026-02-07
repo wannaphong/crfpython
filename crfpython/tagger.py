@@ -68,6 +68,51 @@ class Tagger:
         except Exception as e:
             raise IOError(f"Failed to load model from {name}: {e}")
     
+    def open_inmemory(self, value):
+        """
+        Open a model from memory.
+        
+        Parameters
+        ----------
+        value : bytes
+            Binary model data (content of a file saved by Trainer.train).
+            This should be the bytes content of a pickled model file.
+            
+        Returns
+        -------
+        contextlib.closing
+            Context manager that closes the model
+            
+        Examples
+        --------
+        >>> # Load model from file into memory first
+        >>> with open('model.crfsuite', 'rb') as f:
+        ...     model_data = f.read()
+        >>> # Now use the in-memory data
+        >>> tagger = Tagger()
+        >>> tagger.open_inmemory(model_data)
+        >>> labels = tagger.tag(xseq)
+        """
+        if not isinstance(value, bytes):
+            raise TypeError("Model data must be bytes")
+        
+        try:
+            # Load model from bytes
+            self._model = pickle.loads(value)
+            
+            self._feature_dict = self._model['feature_dict']
+            self._label_dict = self._model['label_dict']
+            self._weights = self._model['weights']
+            self._trans_weights = self._model['trans_weights']
+            
+            # Create inverse label mapping
+            self._labels = {idx: label for label, idx in self._label_dict.items()}
+            
+            return contextlib.closing(self)
+            
+        except Exception as e:
+            raise ValueError(f"Failed to load model from memory: {e}")
+    
     def close(self):
         """Close the model."""
         self._model = None

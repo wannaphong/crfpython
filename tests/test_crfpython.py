@@ -265,6 +265,85 @@ class TestTagger:
         finally:
             if os.path.exists(model_file):
                 os.unlink(model_file)
+    
+    def test_open_inmemory(self):
+        """Test loading a model from memory using open_inmemory()."""
+        # Train a model
+        trainer = crfpython.Trainer(verbose=False)
+        
+        # Add training instances
+        for _ in range(5):
+            xseq = crfpython.ItemSequence()
+            
+            item1 = crfpython.Item()
+            item1.append("word=hello")
+            item1.append("pos=INTJ")
+            xseq.append(item1)
+            
+            item2 = crfpython.Item()
+            item2.append("word=world")
+            item2.append("pos=NOUN")
+            xseq.append(item2)
+            
+            yseq = ['GREETING', 'NOUN']
+            trainer.append(xseq, yseq)
+        
+        # Train and save model to a file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.crfsuite') as f:
+            model_file = f.name
+        
+        try:
+            trainer.train(model_file)
+            
+            # Read model file into memory
+            with open(model_file, 'rb') as f:
+                model_bytes = f.read()
+            
+            # Load model from memory
+            tagger = crfpython.Tagger()
+            tagger.open_inmemory(model_bytes)
+            
+            # Create test sequence
+            test_seq = crfpython.ItemSequence()
+            
+            item1 = crfpython.Item()
+            item1.append("word=hello")
+            item1.append("pos=INTJ")
+            test_seq.append(item1)
+            
+            item2 = crfpython.Item()
+            item2.append("word=world")
+            item2.append("pos=NOUN")
+            test_seq.append(item2)
+            
+            # Tag sequence
+            labels = tagger.tag(test_seq)
+            
+            assert len(labels) == 2
+            assert all(isinstance(label, str) for label in labels)
+            
+            # Check available labels
+            all_labels = tagger.labels()
+            assert len(all_labels) > 0
+            
+            # Close the model
+            tagger.close()
+            
+        finally:
+            if os.path.exists(model_file):
+                os.unlink(model_file)
+    
+    def test_open_inmemory_invalid_data(self):
+        """Test that open_inmemory raises error for invalid data."""
+        tagger = crfpython.Tagger()
+        
+        # Test with non-bytes data
+        with pytest.raises(TypeError):
+            tagger.open_inmemory("not bytes")
+        
+        # Test with invalid bytes data
+        with pytest.raises(ValueError):
+            tagger.open_inmemory(b"invalid pickle data")
 
 
 if __name__ == '__main__':
